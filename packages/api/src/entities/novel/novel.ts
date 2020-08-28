@@ -22,6 +22,8 @@ export default class Novel {
 
     async load() {
         const $ = await scrape(`https://www.wuxiaworld.co/${this.slug}/`);
+        this.title = $(".book-name").text()!.trim();
+        this.cover = $(".book-img img").attr("src")!;
         this.description = $(".desc").text();
         this._chapters = $(".chapter-list a")
             .toArray()

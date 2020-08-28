@@ -27,14 +27,19 @@ async function createWindow() {
             event.returnValue = "http://localhost:8081";
         });
     } else {
-        const server = await Api.init(
-            new Api.ElectronScrapeClient(
-                new BrowserWindow({
-                    show: false
-                })
-            )
-        );
-        const apiServer = `http://localhost:${(server.address() as any).port}`;
+        let apiServer = "";
+        if (process.env.VUE_APP_API_SERVER) {
+            apiServer = process.env.VUE_APP_API_SERVER;
+        } else {
+            const server = await Api.init(
+                new Api.ElectronScrapeClient(
+                    new BrowserWindow({
+                        show: false
+                    })
+                )
+            );
+            apiServer = `http://localhost:${(server.address() as any).port}`;
+        }
         ipcMain.once("init", event => {
             logger.debug("Received init event");
             event.returnValue = apiServer;

@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import AnimeView from "@/views/Anime.vue"
+import MangaView from "@/views/Manga.vue"
+import NovelView from "@/views/Novel.vue"
+import SettingsView from "@/views/Settings.vue"
 
 Vue.use(VueRouter)
 
@@ -10,20 +14,20 @@ const routes = [
     },
     {
         path: "/anime*",
-        component: () => import("@/views/Anime.vue"),
+        component: AnimeView,
     
     },
     {
         path: "/manga",
-        component: () => import("@/views/Manga.vue"),
+        component: MangaView,
     },
     {
         path: "/novel",
-        component: () => import("@/views/Novel.vue"),
+        component: NovelView,
     },
     {
         path: "/settings",
-        component: () => import("@/views/Settings.vue"),
+        component: SettingsView,
     },
 ]
 

@@ -1,7 +1,7 @@
 import ky from "ky";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const DEFAULT_API_SERVER_URL = (window as any).API_SERVER as string;
+export const DEFAULT_API_SERVER_URL =  process.env.VUE_APP_API_SERVER || (window as any).API_SERVER as string;
 export let API_SERVER_URL = DEFAULT_API_SERVER_URL;
 
 export function setApiServerUrl(url: string) {
@@ -61,6 +61,9 @@ export default {
             return ky.get(`${API_SERVER_URL}/novel/${novel}/${chapter}`, {
                 timeout: false
             }).json<string[]>()
+        },
+        async getBySlug(slug: string): Promise<Novel> {
+            return ky.get(`${API_SERVER_URL}/novel/${slug}`).json<Novel>();
         },
         async getChapters(novel: Novel): Promise<Chapter[]> {
             const j = await ky.get(`${API_SERVER_URL}/novel/${novel.slug}`).json<Novel>();

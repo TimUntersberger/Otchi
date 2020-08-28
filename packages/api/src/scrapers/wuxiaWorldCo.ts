@@ -1,5 +1,5 @@
 import scrape from "./scrape";
-import Novel from "../entities/novel/Novel";
+import Novel from "../entities/novel/novel";
 import Chapter from "../entities/novel/chapter";
 
 export default class WuxiaWorldCo {

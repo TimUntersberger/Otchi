@@ -20,12 +20,11 @@
             >
         </q-toolbar>
         <div
-            class="q-mx-auto q-mt-xl column items-center justify-center bg-dark block relative-position"
-            style="height: 720px; width: 1280px; max-width: 1280px; width: 1280px"
+            class="q-mx-auto q-mt-xl column items-center justify-center bg-dark block relative-position video-player"
         >
             <video
                 controls
-                style="height: 720px; max-height: 720px; max-width: 1280px; width: 1280px"
+                class="video-player"
                 ref="$video"
             >
                 <source :src="videoSource" type="video/webm" />
@@ -116,5 +115,11 @@ video::cue {
     font-weight: bold;
     text-shadow: -1.5px 0 black, 0 1.5px black, 1.5px 0 black, 0 -1.5px black;
     background-color: transparent;
+}
+.video-player {
+    height: calc(9vw * 5); 
+    width: calc(16vw * 5);
+    max-height: 720px; 
+    max-width: 1280px; 
 }
 </style>

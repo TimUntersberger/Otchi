@@ -16,32 +16,11 @@
                 <anime-search @selected="viewAnime"></anime-search>
             </div>
             <div v-else-if="route == 'overview'">
-                <q-table
-                    flat
-                    square
-                    hide-header
-                    hide-bottom
-                    dense
-                    separator="none"
+                <media-list
                     title="Recent"
-                    style="max-width: 1000px;"
-                    class="q-mx-auto q-mt-xl"
-                    :data="recentAsTableData"
-                >
-                    <template v-slot:body="props">
-                        <q-tr :props="props" class="cursor-pointer" @click="viewAnime(props.row.anime)">
-                            <q-td :props="props" key="cover">
-                                <q-img style="min-width: 40px; max-width: 80px;" :src="props.row.cover" :ratio="4/5"></q-img>
-                            </q-td>
-                            <q-td :props="props" key="title">
-                                {{props.row.title}}
-                            </q-td>
-                            <q-td :props="props" key="progress">
-                                Episode {{props.row.progress}}
-                            </q-td>
-                        </q-tr>
-                    </template>
-                </q-table>
+                    @click="x => viewAnime(x.anime)"
+                    :items="recentAsTableData"
+                ></media-list>
             </div>
         </div>
     </div>
@@ -50,12 +29,14 @@
 import { defineComponent, ref, computed } from "@vue/composition-api";
 import AnimeView from "../components/AnimeView.vue";
 import AnimeSearch from "../components/AnimeSearch.vue";
+import MediaList from "../components/MediaList.vue";
 import api, { Anime } from "../lib/api";
 
 export default defineComponent({
     components: {
         AnimeView,
-        AnimeSearch
+        AnimeSearch,
+        MediaList
     },
     setup() {
         const route = ref("overview");
@@ -95,7 +76,7 @@ export default defineComponent({
                 anime,
                 cover: anime.cover,
                 title: anime.title,
-                progress: `${episode} / ${(anime.nextEpisodeNumber - 1) || anime.episodeCount}`
+                progress: `Episode ${episode} / ${(anime.nextEpisodeNumber - 1) || anime.episodeCount}`
             }))
         })
 
