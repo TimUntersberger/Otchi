@@ -1,67 +1,80 @@
 <template>
-  <div id="q-app" style="height: 100vh">
-    <q-layout container>
-      <q-drawer v-model="appbar" show-if-above :width="70" :breakpoint="0">
-        <q-toolbar
-          vertical
-          class="bg-dark full-height col-auto column q-pa-none"
-        >
-          <q-tabs
-            v-model="mode"
-            vertical
-            class="text-grey-5 col"
-            indicator-color="transparent"
-            active-color="primary"
-          >
-            <q-tab
-              :ripple="false"
-              @click="$router.push('anime')"
-              name="anime"
-              icon="personal_video"
-              label="Anime"
-            />
-            <q-tab
-              :ripple="false"
-              @click="$router.push('manga')"
-              name="manga"
-              icon="menu_book"
-              label="Manga"
-            />
-            <q-tab
-              :ripple="false"
-              @click="$router.push('novel')"
-              name="novel"
-              icon="book"
-              label="Novel"
-            />
-          </q-tabs>
-          <div class="col-auto full-width column items-center q-mb-sm">
-            <q-skeleton :dark="true" type="QAvatar" />
-            <span class="text-grey-5">Baaka</span>
-          </div>
-        </q-toolbar>
-      </q-drawer>
-      <q-page-container>
-        <q-page padding>
-          <router-view />
-        </q-page>
-      </q-page-container>
-    </q-layout>
-  </div>
+    <div id="q-app" style="height: 100vh">
+        <q-layout container>
+            <q-drawer
+                v-model="appbar"
+                show-if-above
+                :width="65"
+                :breakpoint="0"
+            >
+                <q-toolbar
+                    vertical
+                    class="bg-dark full-height col-auto column q-pa-none"
+                >
+                    <q-tabs
+                        vertical
+                        class="text-grey-5 col full-width"
+                        indicator-color="transparent"
+                        active-color="white"
+                    >
+                        <q-route-tab
+                            :ripple="false"
+                            to="anime"
+                            name="anime"
+                            icon="personal_video"
+                            label="Anime"
+                        />
+                        <q-route-tab
+                            :ripple="false"
+                            to="manga"
+                            name="manga"
+                            icon="menu_book"
+                            label="Manga"
+                        />
+                        <q-route-tab
+                            :ripple="false"
+                            to="novel"
+                            name="novel"
+                            icon="book"
+                            label="Novel"
+                        />
+                    </q-tabs>
+                    <q-tabs
+                        vertical
+                        class="text-grey-5 col-auto full-width"
+                        indicator-color="transparent"
+                        active-color="white"
+                    >
+                        <q-route-tab
+                            :ripple="false"
+                            to="settings"
+                            name="Settings"
+                            icon="settings"
+                        />
+                    </q-tabs>
+                </q-toolbar>
+            </q-drawer>
+            <q-page-container style="overflow: hidden">
+                <q-page>
+                    <keep-alive>
+                        <router-view :key="$route.fullPath" style="height: 100vh"></router-view>
+                    </keep-alive>
+                </q-page>
+            </q-page-container>
+        </q-layout>
+    </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref } from "@vue/composition-api";
 
 export default defineComponent({
-  name: "App",
-  setup() {
-    const mode = ref("anime");
-    const appbar = ref(true);
+    name: "App",
+    setup() {
+        const appbar = ref(true);
 
-    return {
-      appbar,
-      mode
-    };
-  }
+        return {
+            appbar
+        };
+    }
 });
 </script>

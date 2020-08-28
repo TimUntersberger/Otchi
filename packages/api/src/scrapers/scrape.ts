@@ -1,8 +1,10 @@
 import cheerio from "cheerio";
-import ky from "ky-universal";
+import got from "got";
+import logger from "../logger";
 
 export default async function scrape(url: string) {
-    const response = await ky.get(url);
-    const html = await response.text();
-    return cheerio.load(html);
+    logger.debug(`Fetching ${url}`);
+    const response = await got.get(url);
+    logger.debug(`Loading HTML`);
+    return cheerio.load(response.body);
 }

@@ -1,40 +1,71 @@
 import ky from "ky";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const API_SERVER = (window as any).API_SERVER as string;
+export const DEFAULT_API_SERVER_URL = (window as any).API_SERVER as string;
+export let API_SERVER_URL = DEFAULT_API_SERVER_URL;
 
-export interface Episode {
-  number: number;
+export function setApiServerUrl(url: string) {
+    API_SERVER_URL = url;
 }
 
 export interface Anime {
-  id: string;
-  title: string;
-  slug: string;
-  cover: string;
-  episodes: Episode[];
-  description: string;
+    id: number;
+    title: string;
+    romajiTitle: string;
+    cover: string;
+    description: string;
+    status: string;
+    episodeCount: number | null;
+    duration: number;
+    genres: string[];
+    nextEpisodeEta: number | null;
+    nextEpisodeNumber: number | null;
+}
+
+export interface Chapter {
+    id: string;
+    number: number;
+    title: string;
+}
+
+
+export interface Novel {
+    title: string;
+    slug: string;
+    description: string;
+    cover: string;
+    _chapters: Chapter[];
 }
 
 export default {
-  anime: {
-    search(text: string, page = 1) {
-      return ky
-        .get(
-          `${API_SERVER}/anime/search?text=${encodeURIComponent(
-            text
-          )}&page=${page}`
-        )
-        .json<Anime[]>();
+    anime: {
+        search(text: string, page = 1) {
+            return ky.get(`${API_SERVER_URL}/anime/search?text=${encodeURIComponent(text)}&page=${page}`).json<Anime[]>()
+        },
+        getByIds(ids: number[]) {
+            return ky.get(`${API_SERVER_URL}/anime/byId?ids=${ids.join(",")}`).json<Anime[]>()
+        },
+        getVideoUrl(animeId: number, episode: number) {
+            return ky.get(`${API_SERVER_URL}/anime/${animeId}/${episode}`, {
+                timeout: false
+            }).json<{
+                video: string
+            }>()
+        }
     },
-    download(anime: string, episode: number) {
-      return ky.get(`${API_SERVER}/anime/${anime}/${episode}`).json<{
-        video: string;
-      }>();
-    },
-    async getEpisodes(anime: Anime): Promise<Episode[]> {
-      const j = await ky.get(`${API_SERVER}/anime/${anime.id}`).json<Anime>();
-      return j.episodes;
+    novel: {
+        search(text: string, page = 1) {
+            return ky.get(`${API_SERVER_URL}/novel/search?text=${encodeURIComponent(text)}&page=${page}`).json<Novel[]>()
+        },
+        async content(novel: string, chapter: string) {
+            return ky.get(`${API_SERVER_URL}/novel/${novel}/${chapter}`, {
+                timeout: false
+            }).json<string[]>()
+        },
+        async getChapters(novel: Novel): Promise<Chapter[]> {
+            const j = await ky.get(`${API_SERVER_URL}/novel/${novel.slug}`).json<Novel>();
+            return j._chapters;
+        }
     }
-  }
-};
+}
+

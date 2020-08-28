@@ -18,12 +18,12 @@
                     @load="loadMore"
                     :offset="250"
                 >
-                    <div v-for="anime in results" :key="anime.id" class="row justify-center">
-                        <q-card class="my-card cursor-pointer" style="width: 500px" flat square bordered @click="viewAnime(anime)">
+                    <div v-for="novel in results" :key="novel.slug" class="row justify-center">
+                        <q-card class="my-card cursor-pointer" style="width: 500px" flat square bordered @click="onClick(novel)">
                             <q-card-section horizontal>
-                                <q-img width="100px" height="150px" class="col-5" :src="anime.cover" />
+                                <q-img width="100px" height="150px" class="col-5" :src="novel.cover" />
                                 <q-card-section>
-                                    {{ anime.title }}
+                                    {{ novel.title }}
                                 </q-card-section>
                             </q-card-section>
                         </q-card>
@@ -39,19 +39,19 @@ import {
     ref,
     watch,
 } from "@vue/composition-api";
-import api, { Anime } from "../lib/api";
+import api, { Novel } from "../lib/api";
 
 export default defineComponent({
-    name: "AnimeSearch",
+    name: "NovelSearch",
     setup() {
         const search = ref("");
         const loading = ref(false);
-        const results = ref<Anime[]>([]);
+        const results = ref<Novel[]>([]);
 
         watch([search], async () => {
             if (search.value != "") {
                 loading.value = true;
-                const result = await api.anime.search(search.value);
+                const result = await api.novel.search(search.value);
                 results.value = result;
                 loading.value = false;
             }
@@ -59,16 +59,16 @@ export default defineComponent({
 
         async function loadMore(index: number, done: (x: boolean) => void) {
             loading.value = true;
-            const result = await api.anime.search(search.value, index + 1);
+            const result = await api.novel.search(search.value, index + 1);
             results.value = [...results.value, ...result];
             done(result.length == 0);
             loading.value = false;
         }
 
-        function viewAnime(anime: Anime) {
+        function onClick(item: Novel) {
             // eslint-disable-next-line
             // @ts-ignore
-            this.$emit("selected", anime);
+            this.$emit("selected", item);
         }
 
         return {
@@ -76,7 +76,7 @@ export default defineComponent({
             results,
             loadMore,
             loading,
-            viewAnime
+            onClick
         };
     }
 });

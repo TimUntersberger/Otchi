@@ -1,8 +1,11 @@
 <template>
-  <p>Manga</p>
+    <div class="full-width">
+        <p>Manga</p>
+    </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({});
 </script>
+

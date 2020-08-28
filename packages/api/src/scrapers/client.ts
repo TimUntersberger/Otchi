@@ -10,15 +10,13 @@ export interface ScrapeClient {
 export class ElectronScrapeClient implements ScrapeClient {
     window: BrowserWindow;
 
-    constructor() {
-        this.window = new BrowserWindow({
-            show: false,
-        });
+    constructor(window: BrowserWindow) {
+        this.window = window;
     }
 
     streamtape(): Promise<string> {
-        return new Promise((resolve) =>
-            this.window.webContents.on("dom-ready", () => {
+        return new Promise((resolve, reject) =>
+            this.window.webContents.once("dom-ready", () => {
                 this.window.webContents
                     .executeJavaScript(
                         `
@@ -35,27 +33,27 @@ export class ElectronScrapeClient implements ScrapeClient {
                 `
                     )
                     .then(resolve)
-                    .catch(console.log);
+                    .catch(reject);
             })
         );
     }
 
     mp4upload(): Promise<string> {
-        return new Promise((resolve) =>
-            this.window.webContents.on("dom-ready", () => {
+        return new Promise((resolve, reject) => {
+            this.window.webContents.once("dom-ready", () => {
                 this.window.webContents
                     .executeJavaScript(
                         `
-                        const ele = document.querySelector('#container > div.plyr.plyr--full-ui.plyr--video.plyr--html5.plyr--paused.plyr--stopped.plyr--pip-supported.plyr--fullscreen-enabled > div.plyr__video-wrapper > video > source')
-                        ele 
-                            ? ele.src 
-                            : eval("(" + eval(document.querySelector('body > script:nth-child(3)').innerText.substring(4)).split(";")[0].substring(14) + ")").sources[0].src
-                    `
+                    const ele = document.querySelector('#container > div.plyr.plyr--full-ui.plyr--video.plyr--html5.plyr--paused.plyr--stopped.plyr--pip-supported.plyr--fullscreen-enabled > div.plyr__video-wrapper > video > source')
+                    ele 
+                        ? ele.src 
+                        : eval("(" + eval(document.querySelector('body > script:nth-child(3)').innerText.substring(4)).split(";")[0].substring(14) + ")").sources[0].src
+                `
                     )
                     .then(resolve)
-                    .catch(console.log);
-            })
-        );
+                    .catch(reject);
+            });
+        });
     }
 
     goto(url: string): Promise<void> {
@@ -67,7 +65,7 @@ export class PuppeteerScrapeClient implements ScrapeClient {
     page!: Page;
 
     constructor(browser: Browser) {
-        browser.newPage().then(p => this.page = p);
+        browser.newPage().then((p) => (this.page = p));
     }
 
     streamtape(): Promise<string> {
@@ -90,14 +88,16 @@ export class PuppeteerScrapeClient implements ScrapeClient {
             const ele = document.querySelector<HTMLSourceElement>(
                 "#container > div.plyr.plyr--full-ui.plyr--video.plyr--html5.plyr--paused.plyr--stopped.plyr--pip-supported.plyr--fullscreen-enabled > div.plyr__video-wrapper > video > source"
             );
-            
+
             return ele
                 ? ele.src
                 : eval(
                       "(" +
                           eval(
                               document
-                                  .querySelector<HTMLScriptElement>("body > script:nth-child(3)")!
+                                  .querySelector<HTMLScriptElement>(
+                                      "body > script:nth-child(3)"
+                                  )!
                                   .innerText.substring(4)
                           )
                               .split(";")[0]
@@ -107,7 +107,9 @@ export class PuppeteerScrapeClient implements ScrapeClient {
         });
     }
 
-    goto(url: string): Promise<void> {
-        return this.page.goto(url).then(x => {});
+    async goto(url: string): Promise<void> {
+        const x = await this.page.goto(url, {
+            waitUntil: "domcontentloaded",
+        });
     }
 }

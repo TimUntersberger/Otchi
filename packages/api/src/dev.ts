@@ -11,7 +11,7 @@ async function main() {
         headless: true
     });
 
-    init(new PuppeteerScrapeClient(browser) ,8080);
+    await init(new PuppeteerScrapeClient(browser), 8081);
 }
 
-main();
+main().catch(console.log);

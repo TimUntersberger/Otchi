@@ -7,7 +7,8 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "postbuild": "lerna bootstrap"
   },
   "keywords": [],
   "author": "",
@@ -24,13 +25,16 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@otchi/logging": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "ky": "^0.23.0",
-    "ky-universal": "^0.8.1",
+    "got": "^11.5.2",
+    "graphql": "^15.3.0",
+    "graphql-request": "^3.0.0",
     "puppeteer-extra": "^3.1.15",
     "puppeteer-extra-plugin-adblocker": "^2.11.6",
-    "puppeteer-extra-plugin-stealth": "^2.6.0"
+    "puppeteer-extra-plugin-stealth": "^2.6.0",
+    "slugify": "^1.4.5"
   }
 }

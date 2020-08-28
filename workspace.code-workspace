@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "✨ root",
+			"path": "."
+		},
+		{
+			"name": "🚀 @otchi/api",
+			"path": "packages\\api"
+		},
+		{
+			"name": "🚀 @otchi/frontend",
+			"path": "packages\\frontend"
+		},
+		{
+			"name": "📦 @otchi/logging",
+			"path": "packages\\logging"
+		},
+		{
+			"name": "🚀 @otchi/backend",
+			"path": "packages\\backend"
+		}
+	],
+	"settings": {}
+}

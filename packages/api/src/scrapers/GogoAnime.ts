@@ -1,9 +1,10 @@
-import ky from "ky-universal";
+import got from "got";
 import Anime from "../entities/anime/anime";
 import scrape from "./scrape";
 import Episode from "../entities/anime/episode";
 import cheerio from "cheerio";
 import { ScrapeClient } from "./client";
+import logger from "../logger";
 
 export default class GogoAnime {
     async search(text: string, page = 1) {
@@ -31,23 +32,27 @@ export default class GogoAnime {
                 return anime;
             });
     }
-    async load(anime: Anime) {
-        const url = `https://www10.gogoanime.pro/ajax/film/servers/${anime.id}?ep=&episode=`;
-        //console.log(url);
-        let response = await ky.get(url);
-        
-        if (response.status == 301) {
+    async getEpisodes(id: string) {
+        const url = `https://www2.gogoanime.pro/ajax/film/servers/${id}?ep=&episode=`;
+        console.log(url);
+        let response = await got.get<any>(url, {
+            responseType: "json",
+        });
+
+        if (response.statusCode == 301) {
             //console.log("Domain was moved");
-            const newUrl = response.headers.get("location");
+            const newUrl = response.headers.location;
             //console.log(`new url: ${newUrl}`);
             if (newUrl) {
-                response = await ky.get(newUrl);
+                response = await got.get(newUrl, {
+                    responseType: "json",
+                });
             }
         }
 
-        const html = await response.json().then((x) => x.html);
+        const html = response.body.html;
         const $ = cheerio.load(html);
-        anime.episodes = $("ul li a")
+        return $("#episodes ul li a")
             .toArray()
             .map((e) => ({
                 id: e.attribs["data-name"],
@@ -59,22 +64,21 @@ export default class GogoAnime {
                 episode.id = x.id;
                 return episode;
             });
-        return anime;
     }
-    async download(anime: Anime, episode: Episode, scrapeClient: ScrapeClient) {
-        await this.load(anime);
-
+    async download(
+        animeId: string,
+        episodeId: string,
+        scrapeClient: ScrapeClient
+    ) {
         const results = await Promise.allSettled(
             ["35", "40"]
                 .map((p) => ({
                     id: p,
-                    url: `https://www10.gogoanime.pro/ajax/episode/info?filmId=${
-                        anime.id
-                    }&server=${p}&episode=${anime.episode(episode.number)!.id}`,
+                    url: `https://www2.gogoanime.pro/ajax/episode/info?filmId=${animeId}&server=${p}&episode=${episodeId}`,
                 }))
                 .map(async (x) => ({
                     ...x,
-                    json: await ky.get(x.url).json<any>(),
+                    json: await got.get(x.url).json<any>(),
                 }))
         ).then((results) => {
             let x = [];
@@ -88,7 +92,7 @@ export default class GogoAnime {
             return x;
         });
 
-        console.log(results)
+        logger.debug(`Found ${results.length} valid providers`);
 
         if (results.length == 0) {
             throw new Error("Couldn't find a valid provider");
@@ -96,15 +100,16 @@ export default class GogoAnime {
 
         const provider = results[0];
 
-        console.log(provider);
-
+        logger.debug(`Found iframeUrl ${provider.json.target}`);
         await scrapeClient.goto(provider.json.target);
 
         let video = "";
 
         if (provider.id == "35") {
+            logger.debug(`Using mp4upload provider`);
             video = await scrapeClient.mp4upload();
         } else if (provider.id == "40") {
+            logger.debug(`Using streamtape provider`);
             video = await scrapeClient.streamtape();
         }
 

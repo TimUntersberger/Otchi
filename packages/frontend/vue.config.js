@@ -4,20 +4,20 @@ module.exports = {
             builderOptions: {
                 productName: "Otchi",
             },
+            preload: "src/preload.js",
+            
             nodeModulesPath: ["../api/node_modules", "./node_modules"],
-        },
-        configureWebpack: {
-            resolve: {
-                symlinks: true,
-            },
-            options: {
-                appendTsSuffixTo: [/.vue$/]
-            }
         },
         quasar: {
             importStrategy: "kebab",
             rtlSupport: false,
         },
     },
+    devServer: {
+        watchOptions: {
+            poll: true
+        }
+    },
+    lintOnSave: false,
     transpileDependencies: ["quasar"],
 };
