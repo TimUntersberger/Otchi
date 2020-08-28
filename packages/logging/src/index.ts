@@ -1,7 +1,7 @@
 import winston from "winston";
 
-const logger = (namespace: string) =>
-    winston.createLogger({
+export default function (namespace: string) {
+    return winston.createLogger({
         level: "debug",
         format: winston.format.combine(
             winston.format((info) => {
@@ -19,7 +19,6 @@ const logger = (namespace: string) =>
                     }${info.message}`
             )
         ),
-        transports: [new winston.transports.Console(),
+        transports: [new winston.transports.Console()],
     });
-
-export default logger;
+}
