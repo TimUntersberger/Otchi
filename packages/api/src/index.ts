@@ -32,7 +32,7 @@ export function init(client: ScrapeClient, port?: number): Promise<http.Server> 
         });
 
         const server = http.createServer(app);
-        server.listen(port, () => {
+        server.listen(port, "0.0.0.0", () => {
             logger.info(`Started listening on http://localhost:${(server.address() as any).port}`)
             resolve(server);
         });
