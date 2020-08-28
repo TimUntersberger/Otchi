@@ -1,5 +1,5 @@
 <template>
-    <div class="column content-stretch">
+    <div class="column content-stretch fullscreen-bg" ref="$temp">
         <q-toolbar class="bg-dark text-grey-5 text-bold">
             <q-btn
                 flat
@@ -7,7 +7,7 @@
                 :ripple="false"
                 class="q-mr-sm"
                 icon="keyboard_backspace"
-                @click="$emit('back')"
+                @click="onBack"
             />
             <span>{{ novel.title }}</span>
             <span class="q-mx-sm" style="font-size: 18px">/</span>
@@ -27,6 +27,13 @@
                     :options="chaptersAsOptions"
                 ></q-select>
             </div>
+            <q-btn
+                flat
+                padding="none"
+                :ripple="false"
+                :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                @click="toggleFullscreen"
+            />
         </q-toolbar>
         <q-scroll-area
             class="q-mt-sm q-mx-auto q-px-md col full-height full-width"
@@ -79,10 +86,12 @@ export default defineComponent({
                 content: string[];
             })[]
         >([]);
+        const $temp = ref<HTMLDivElement | null>(null);
         const $chapterList = ref<any>(null);
         const chapterNumber = ref(
             Number(localStorage.getItem(`novel-${props.novel.slug}`)) || 0
         );
+        const isFullscreen = ref(false);
         const earliestChapterNumber = ref(chapterNumber.value);
         const latestChapterNumber = ref(chapterNumber.value);
 
@@ -103,7 +112,6 @@ export default defineComponent({
                 String(chapterNumber.value)
             );
         });
-
         async function loadMore(_idx: number, done: (x: boolean) => void) {
             const chapter = props.novel._chapters[latestChapterNumber.value];
             const result = await api.novel.content(
@@ -125,6 +133,24 @@ export default defineComponent({
             done(result.length == 0);
         }
 
+        async function onBack() {
+            if(isFullscreen.value) {
+                await toggleFullscreen();
+            }
+
+            (this as any).$emit("back")
+        }
+
+        async function toggleFullscreen(){
+            isFullscreen.value = !isFullscreen.value;
+
+            if(isFullscreen.value) {
+                $temp?.value.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        }
+
         function changeChapter(value: any) {
             latestChapterNumber.value = value;
             chapterNumber.value = value;
@@ -134,7 +160,7 @@ export default defineComponent({
             $chapterList.value.trigger();
         }
 
-        function onScroll(x: any) {
+        function onScroll(x) {
             const centerElement = document.elementFromPoint(
                 window.innerWidth / 2,
                 window.innerHeight / 2
@@ -158,14 +184,22 @@ export default defineComponent({
             chapterCount: props.novel._chapters.length,
             chaptersAsOptions,
             changeChapter,
+            toggleFullscreen,
             chapterNumber,
             $chapterList,
+            onBack,
+            $temp,
             chapter,
             chapters,
+            isFullscreen,
             loadMore,
             onScroll
         };
     }
 });
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.fullscreen-bg {
+    background: white !important;
+}
+</style>
