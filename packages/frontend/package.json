@@ -23,6 +23,7 @@
     "ky-universal": "^0.8.1",
     "node-fetch": "^2.6.0",
     "quasar": "^1.0.0",
+    "register-service-worker": "^1.7.1",
     "setimmediate": "^1.0.5",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
@@ -32,7 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-pwa": "^4.5.4",
     "@vue/cli-plugin-router": "^4.5.4",
     "@vue/cli-plugin-typescript": "^4.5.4",
     "@vue/cli-service": "~4.5.0",
@@ -49,21 +50,6 @@
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.4",
     "vue-cli-plugin-quasar": "~2.0.2",
     "vue-template-compiler": "^2.6.11"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended",
-      "@vue/typescript"
-    ],
-    "parserOptions": {
-      "parser": "@typescript-eslint/parser"
-    },
-    "rules": {}
   },
   "browserslist": [
     "> 1%",

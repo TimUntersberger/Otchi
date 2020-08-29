@@ -18,6 +18,9 @@ module.exports = {
             poll: true
         }
     },
+    pwa: {
+        name: "Otchi"
+    },
     lintOnSave: false,
     transpileDependencies: ["quasar"],
 };

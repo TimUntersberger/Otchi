@@ -138,14 +138,22 @@ export default defineComponent({
                 await toggleFullscreen();
             }
 
-            (this as any).$emit("back")
+            // eslint-disable-next-line
+            // @ts-ignore
+            this.$emit("back")
         }
 
         async function toggleFullscreen(){
             isFullscreen.value = !isFullscreen.value;
 
             if(isFullscreen.value) {
-                $temp?.value.requestFullscreen();
+                // eslint-disable-next-line
+                // @ts-ignore
+                const ele = $temp!.value as any;
+                if(ele.webkitRequestFullscreen)
+                    ele.webkitRequestFullscreen();
+                else
+                    ele.requestFullscreen();
             } else {
                 await document.exitFullscreen();
             }
