@@ -1,6 +1,6 @@
 <template>
     <div class="column content-stretch">
-        <q-toolbar class="bg-dark text-grey-5 text-bold" :style="showAppBar ? '' : 'visibility: hidden'">
+        <q-toolbar class="bg-dark text-grey-5 text-bold" 
             <q-btn
                 flat
                 padding="none"
@@ -97,7 +97,6 @@ export default defineComponent({
         const chapterNumber = ref(
             Number(localStorage.getItem(`novel-${props.novel.slug}`)) || 0
         );
-        const showAppBar = ref(true);
         const isFullscreen = ref(false);
         const earliestChapterNumber = ref(chapterNumber.value);
         const latestChapterNumber = ref(chapterNumber.value);
@@ -165,12 +164,6 @@ export default defineComponent({
         }
 
         function onScroll(x) {
-            if(x.direction == "down" && showAppBar.value) {
-                showAppBar.value = false;
-            } else if (x.direction == "up" && !showAppBar.value) {
-                showAppBar.value = true;
-            }
-
             const centerElement = document.elementFromPoint(
                 window.innerWidth / 2,
                 window.innerHeight / 2
@@ -199,7 +192,6 @@ export default defineComponent({
             $chapterList,
             onBack,
             chapter,
-            showAppBar,
             chapters,
             isFullscreen,
             loadMore,
