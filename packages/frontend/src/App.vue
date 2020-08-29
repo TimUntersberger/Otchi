@@ -2,7 +2,7 @@
     <div id="q-app" style="height: 100vh">
         <q-layout container>
             <q-drawer
-                v-model="appbar"
+                v-model="globals.sidebar"
                 show-if-above
                 :width="65"
                 :breakpoint="0"
@@ -65,16 +65,35 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "@vue/composition-api";
+import { defineComponent, ref, reactive, provide, watch } from "@vue/composition-api";
+import { Dark } from "quasar"
 
 export default defineComponent({
     name: "App",
     setup() {
-        const appbar = ref(true);
+        const globals = reactive({
+            sidebar: true,
+            darkMode: localStorage.getItem("dark-mode") == "true"
+        })
+        
+        Dark.set(globals.darkMode);
+
+        watch(() => globals.darkMode, (prev) => {
+            localStorage.setItem("dark-mode", String(globals.darkMode))
+            Dark.set(globals.darkMode);
+        })
+
+        provide("globals", globals);
 
         return {
-            appbar
+            globals
         };
     }
 });
 </script>
+<style lang="scss">
+body.body--dark {
+    color: #f0f0f0 !important;
+    background: #1D1D1D !important;
+}
+</style>

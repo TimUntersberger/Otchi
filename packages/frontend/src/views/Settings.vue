@@ -8,15 +8,18 @@
             :placeholder="DEFAULT_API_SERVER_URL"
             dense
         ></q-input>
+        <label>Dark mode</label>
+        <q-toggle v-model="globals.darkMode"></q-toggle>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "@vue/composition-api";
+import { defineComponent, ref, watch, inject } from "@vue/composition-api";
 import { DEFAULT_API_SERVER_URL, setApiServerUrl } from "../lib/api";
 
 export default defineComponent({
     setup() {
+        const globals = inject<any>("globals");
         const apiServerUrl = ref("");
 
         watch([apiServerUrl], () => {
@@ -25,6 +28,7 @@ export default defineComponent({
 
         return {
             apiServerUrl,
+            globals,
             DEFAULT_API_SERVER_URL
         };
     }

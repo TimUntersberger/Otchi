@@ -1,6 +1,6 @@
 <template>
-    <div class="column content-stretch fullscreen-bg" ref="$temp">
-        <q-toolbar class="bg-dark text-grey-5 text-bold">
+    <div class="column content-stretch">
+        <q-toolbar class="bg-dark text-grey-5 text-bold" :style="showAppBar ? '' : 'visibility: hidden'">
             <q-btn
                 flat
                 padding="none"
@@ -38,8 +38,8 @@
         <q-scroll-area
             class="q-mt-sm q-mx-auto q-px-md col full-height full-width"
             style="height: 90vh; font-size: 16px"
-            @scroll="onScroll"
         >
+            <q-scroll-observer @scroll="onScroll"></q-scroll-observer>
             <q-infinite-scroll
                 @load="loadMore"
                 :offset="400"
@@ -68,7 +68,13 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from "@vue/composition-api";
+import {
+    defineComponent,
+    ref,
+    computed,
+    watch,
+    inject
+} from "@vue/composition-api";
 import logger from "../logger/renderer";
 import api, { Chapter } from "../lib/api";
 
@@ -81,16 +87,17 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const globals = inject<any>("globals");
         const chapters = ref<
             (Chapter & {
                 content: string[];
             })[]
         >([]);
-        const $temp = ref<HTMLDivElement | null>(null);
         const $chapterList = ref<any>(null);
         const chapterNumber = ref(
             Number(localStorage.getItem(`novel-${props.novel.slug}`)) || 0
         );
+        const showAppBar = ref(true);
         const isFullscreen = ref(false);
         const earliestChapterNumber = ref(chapterNumber.value);
         const latestChapterNumber = ref(chapterNumber.value);
@@ -134,29 +141,18 @@ export default defineComponent({
         }
 
         async function onBack() {
-            if(isFullscreen.value) {
-                await toggleFullscreen();
+            if (isFullscreen.value) {
+                globals.sidebar = true;
             }
 
             // eslint-disable-next-line
             // @ts-ignore
-            this.$emit("back")
+            this.$emit("back");
         }
 
-        async function toggleFullscreen(){
+        async function toggleFullscreen() {
             isFullscreen.value = !isFullscreen.value;
-
-            if(isFullscreen.value) {
-                // eslint-disable-next-line
-                // @ts-ignore
-                const ele = $temp!.value as any;
-                if(ele.webkitRequestFullscreen)
-                    ele.webkitRequestFullscreen();
-                else
-                    ele.requestFullscreen();
-            } else {
-                await document.exitFullscreen();
-            }
+            globals.sidebar = !isFullscreen.value;
         }
 
         function changeChapter(value: any) {
@@ -169,6 +165,12 @@ export default defineComponent({
         }
 
         function onScroll(x) {
+            if(x.direction == "down" && showAppBar.value) {
+                showAppBar.value = false;
+            } else if (x.direction == "up" && !showAppBar.value) {
+                showAppBar.value = true;
+            }
+
             const centerElement = document.elementFromPoint(
                 window.innerWidth / 2,
                 window.innerHeight / 2
@@ -196,8 +198,8 @@ export default defineComponent({
             chapterNumber,
             $chapterList,
             onBack,
-            $temp,
             chapter,
+            showAppBar,
             chapters,
             isFullscreen,
             loadMore,
@@ -206,13 +208,4 @@ export default defineComponent({
     }
 });
 </script>
-<style lang="scss">
-.fullscreen-bg {
-    background: white !important;
-}
-
-.fullscreen-bg:-webkit-full-screen {
-    width: 100%;
-    height: 100%;
-}
-</style>
+<style lang="scss"></style>
