@@ -1,6 +1,6 @@
 <template>
     <div class="column content-stretch">
-        <q-toolbar class="bg-dark text-grey-5 text-bold" 
+        <q-toolbar class="bg-dark text-grey-5 text-bold">
             <q-btn
                 flat
                 padding="none"
