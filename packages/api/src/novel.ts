@@ -10,7 +10,7 @@ export default () => express.Router()
     .get("/search", async (req, res) => {
         const text = decodeURIComponent(req.query.text as string);
         const page = Number(req.query.page || 1);
-        logger.debug(`Searching for ${text} page ${page}`);
+        logger.debug(`Searching for '${text}' page ${page}`);
         const result = await wwc.search(text, page);
         logger.debug(`Found ${result.length} results`);
 

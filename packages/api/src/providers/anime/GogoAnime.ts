@@ -1,7 +1,9 @@
 import AnimeProvider from "./AnimeProvider";
 import { AnilistAnime } from "../../anilist";
 import GogoAnime from "../../scrapers/GogoAnime";
+import slugify from "slugify";
 import { scrapeClient } from "../..";
+import logger from "../../logger";
 
 const ga = new GogoAnime();
 
@@ -15,11 +17,13 @@ class GogoAnimeProvider implements AnimeProvider {
         if (cacheResult) {
             return cacheResult;
         }
-        const results = await ga.search(anime.title);
-        let result = results[0];
-        if (result.slug.endsWith("-dub")) {
-            result = results[1];
-        }
+        const searchText = slugify(anime.romajiTitle, {
+            lower: true,
+            remove: /[:\(\)]/
+        });
+        logger.debug(`Searching for ${searchText}`)
+        const results = await ga.search(searchText);
+        const result = results[0];
         animeIdCache[cacheKey] = result.id;
         return result.id;
     }

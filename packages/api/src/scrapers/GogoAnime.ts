@@ -8,7 +8,7 @@ import logger from "../logger";
 
 export default class GogoAnime {
     async search(text: string, page = 1) {
-        const url = `https://gogoanime.pro/search?keyword=${encodeURIComponent(
+        const url = `https://gogoanime.pro/filter?language[]=subbed&keyword=${encodeURIComponent(
             text
         )}&page=${page}`;
         const $ = await scrape(url);
